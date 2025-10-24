@@ -9,15 +9,18 @@ jobs:
     timeout-minutes: 3600
 
     steps:
-      - name: Atualizar e instalar xrdp
+      - name: Configure Core RDP Settings
         run: |
           sudo apt update
-          sudo apt install -y xrdp
+          sudo apt install xfce4 xfce4-goodies -y
+          sudo apt install xrdp -y
 
-      - name: Habilitar e iniciar serviço xrdp
+      - name: Xsession setup for auto-init of GUI and service xrdp
         run: |
           sudo systemctl enable xrdp
           sudo systemctl start xrdp
+          $ echo "xfce4-session" | tee .xsession
+          sudo sudo ss -pnl | grep 3389
 
       - name: Configurar firewall para permitir RDP na porta 3389
         run: |
@@ -42,7 +45,8 @@ jobs:
 
       - name: Instalar Tailscale
         run: |
-          curl -fsSL https://tailscale.com/install.sh | sh
+         curl -fsSL https://tailscale.com/install.sh | sh
+         sudo tailscale up
 
       - name: Estabelecer conexão Tailscale
         env:
